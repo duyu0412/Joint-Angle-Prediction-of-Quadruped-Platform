@@ -43,6 +43,8 @@ output_shape = config['model']['output_shape']
 # 训练参数
 lr = config['training']['learning_rate']
 epochs = config['training']['epochs']
+
+
 # 2. 定义模型
 class LinkageNet(nn.Module):
     def __init__(self, in_dim, out_dim):
@@ -61,6 +63,7 @@ class LinkageNet(nn.Module):
     def forward(self, x):
         return self.model(x)
 
+
 def load_data(input_file, output_file):
     # 1. 读取数据
     x = pd.read_csv(input_file, header=None).values.astype(np.float32)
@@ -74,6 +77,8 @@ def load_data(input_file, output_file):
     x_norm = (x - x_min) / (x_max - x_min)
     y_norm = (y - y_min) / (y_max - y_min)
     return x_norm, y_norm, x_min, x_max, y_min, y_max
+
+
 def compute_end_effector_position(y_pred):
     theta3_true = theta0 + y_pred[:,0]
     theta6_true = theta3_true + theta3_6
@@ -82,6 +87,8 @@ def compute_end_effector_position(y_pred):
     x_9_true = r0 * np.cos(theta0) + r3 * np.cos(theta3_true) + r6 * np.cos(theta6_true) + r9 * np.cos(theta9_true)
     y_9_true = r0 * np.sin(theta0) + r3 * np.sin(theta3_true) + r6 * np.sin(theta6_true) + r9 * np.sin(theta9_true)
     return x_9_true, y_9_true
+
+
 def main():
     x_norm, y_norm, _, _, y_min, y_max = load_data(input_file, output_file)
 
@@ -89,12 +96,14 @@ def main():
     x_train = torch.tensor(x_norm, dtype=torch.float32).to(device)
     y_train = torch.tensor(y_norm, dtype=torch.float32).to(device)
 
+
+
     # model = LinkageNet(x_train.shape[1], y_train.shape[1]).to(device)
-    model_path = "linkage_net_overfit_gpu.pth"
+    pretrained_path = "linkage_net_overfit_gpu.pth"
     # 如果存在预训练模型，则加载
-    if os.path.exists(model_path):
+    if os.path.exists(pretrained_path):
         model = LinkageNet(input_shape, output_shape).to(device)
-        model.load_state_dict(torch.load(model_path))
+        model.load_state_dict(torch.load(pretrained_path, map_location=device))
         print("Loaded pre-trained model.")
     else:
         model = LinkageNet(input_shape, output_shape).to(device)
@@ -134,6 +143,7 @@ def main():
     # 7. 保存模型
     torch.save(model.state_dict(), "linkage_net_overfit_gpu_best.pth")
     print("Model saved successfully.")
+
 
 if __name__ == "__main__":
     main()
