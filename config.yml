@@ -1,0 +1,27 @@
+# 文件路径配置
+files:
+  input_file: 'input.csv'
+  output_file: 'output.csv'
+  pretrain_model_path: "linkage_net_overfit_gpu.pth"
+  best_model_path: "linkage_net_overfit_gpu_best.pth"
+
+# 连杆参数
+linkage:
+  r0: 84
+  r3: 60
+  r6: 50.53
+  r8: 53.7
+  r9: 140
+  theta0_deg: 35  # 度数，会在代码中转换为弧度
+  theta3_6_deg: 15  # 度数，会在代码中转换为弧度
+  theta8_9_deg: 30  # 度数，会在代码中转换为弧度
+
+# 模型参数
+model:
+  input_shape: 1
+  output_shape: 8
+
+# 训练参数
+training:
+  learning_rate: 0.00005  # 5e-5 改为数字格式
+  epochs: 20000
